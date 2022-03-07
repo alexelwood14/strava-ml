@@ -31,6 +31,14 @@ def import_data():
     return headers, np.array(data).T
 
 
+def format_data(headers, d):
+    data = {}
+    for i in range(len(headers)):
+        data[headers[i]] = d[i]
+
+    return data
+
+
 if __name__ == '__main__':
     headers, data = import_data()
     clean_data(data)
