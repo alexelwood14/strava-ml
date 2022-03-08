@@ -17,6 +17,27 @@ def clean_data(data):
                     continue
 
 
+def partition(data, filter):
+    part = {}
+    bins = []
+    for element in data[filter]:
+        if element not in bins:
+            bins.append(element)
+
+    for bin in bins:
+        part[bin] = {}
+        for atr in data.keys():
+            if atr != filter:
+                part[bin][atr] = []
+                for element in range(len(data[atr])):
+                    if data[filter][element] == bin:
+                        part[bin][atr].append(data[atr][element])
+                part[bin][atr] = np.array(part[bin][atr])
+
+
+    return part
+
+
 class Data:
     def __init__(self):
         self.file_name = 'activities.csv'
