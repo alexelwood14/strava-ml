@@ -4,7 +4,7 @@ import numpy as np
 
 def clean_data(data):
     # Convert to correct data types
-    for row in range(1, len(data)):
+    for row in range(len(data)):
         for atr in range(len(data[row])):
             # Try to replace string with int
             try:
@@ -24,6 +24,7 @@ class Data:
         with open(self.file_name) as csv_file:
             raw_data = csv.reader(csv_file, delimiter=',')
             self.headers = next(raw_data)
+            self.types = next(raw_data)
             for row in raw_data:
                 self.__data.append(row)
 
@@ -31,10 +32,27 @@ class Data:
 
         clean_data(self.__data)
 
-        # Reformat the data
+        # Reformat the data into the correct np types
         data = {}
         for i in range(len(self.headers)):
-            data[self.headers[i]] = self.__data[i]
+            if self.types[i] == 'int':
+                data[self.headers[i]] = []
+                for element in self.__data[i]:
+                    if element == '':
+                        element = -1
+                    data[self.headers[i]].append(int(element))
+                data[self.headers[i]] = np.array(data[self.headers[i]])
+
+            elif self.types[i] == 'float':
+                data[self.headers[i]] = []
+                for element in self.__data[i]:
+                    if element == '':
+                        element = -1.0
+                    data[self.headers[i]].append(float(element))
+                data[self.headers[i]] = np.array(data[self.headers[i]])
+
+            elif self.types[i] == 'string':
+                data[self.headers[i]] = np.array(self.__data[i])
 
         self.__data = data
 
@@ -60,4 +78,5 @@ class Data:
 
 if __name__ == '__main__':
     data_set = Data()
-    data = data_set.get_data(['Activity ID', 'Perceived Exertion'])
+    data = data_set.get_data(['Activity ID', 'Perceived Exertion', 'Activity Gear'])
+    print(data)
