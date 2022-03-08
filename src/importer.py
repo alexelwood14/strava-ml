@@ -2,21 +2,6 @@ import csv
 import numpy as np
 
 
-def clean_data(data):
-    # Convert to correct data types
-    for row in range(len(data)):
-        for atr in range(len(data[row])):
-            # Try to replace string with int
-            try:
-                data[row][atr] = int(data[row][atr])
-            except ValueError:
-                # Try to replace string with float
-                try:
-                    data[row][atr] = float(data[row][atr])
-                except ValueError:
-                    continue
-
-
 def partition(data, filter):
     part = {}
     bins = []
@@ -34,7 +19,6 @@ def partition(data, filter):
                         part[bin][atr].append(data[atr][element])
                 part[bin][atr] = np.array(part[bin][atr])
 
-
     return part
 
 
@@ -50,8 +34,6 @@ class Data:
                 self.__data.append(row)
 
         self.__data = np.array(self.__data).T
-
-        clean_data(self.__data)
 
         # Reformat the data into the correct np types
         data = {}
@@ -73,6 +55,9 @@ class Data:
                 data[self.headers[i]] = np.array(data[self.headers[i]])
 
             elif self.types[i] == 'string':
+                for element in self.__data[i]:
+                    if element == '':
+                        element = '-1.0'
                 data[self.headers[i]] = np.array(self.__data[i])
 
         self.__data = data
@@ -85,7 +70,11 @@ class Data:
         if omit_nones:
             for header in headers:
                 for atr in range(len(self.__data[header])):
-                    if self.__data[header][atr] == '':
+                    if type(self.__data[header][atr]) == np.int64 and self.__data[header][atr] == -1:
+                        include[atr] = False
+                    elif type(self.__data[header][atr]) == np.float64 and self.__data[header][atr] == -1.0:
+                        include[atr] = False
+                    elif type(self.__data[header][atr]) == np.str_ and self.__data[header][atr] == '':
                         include[atr] = False
 
         for header in headers:
@@ -99,5 +88,5 @@ class Data:
 
 if __name__ == '__main__':
     data_set = Data()
-    data = data_set.get_data(['Activity ID', 'Perceived Exertion', 'Activity Gear'])
+    data = data_set.get_data(['Activity Gear'])
     print(data)
