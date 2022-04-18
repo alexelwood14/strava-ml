@@ -22,6 +22,31 @@ def partition(data, filter):
     return part
 
 
+def separate_x_y(data, y):
+    X = []
+    Y = []
+    for header in data.keys():
+        if header == y:
+            Y = data[header]
+        else:
+            X.append(data[header])
+
+    return np.array(X).T, Y
+
+
+def code_classes(Y):
+    classes = np.unique(Y)
+    coding = {}
+    for i in range(len(classes)):
+        coding[classes[i]] = i
+
+    new_Y = []
+    for i in Y:
+        new_Y.append(coding[i])
+
+    return np.array(new_Y), coding
+
+
 class Data:
     def __init__(self):
         self.file_name = 'activities.csv'
